@@ -2,6 +2,7 @@ const asyncHandler = require("express-async-handler");
 const Message = require("../models/messageModel");
 const User = require("../models/userModel");
 const Chat = require("../models/chatModel");
+const mongoose = require("mongoose");
 
 //@description     Get all Messages
 //@route           GET /api/Message/:chatId
@@ -11,6 +12,21 @@ const allMessages = asyncHandler(async (req, res) => {
     const messages = await Message.find({ chat: req.params.chatId })
       .populate("sender", "name pic email")
       .populate("chat");
+    // const messages = await Message.aggregate([
+    //   { $match: { chat: mongoose.Types.ObjectId(req.params.chatId) } },
+    //   {
+    //     $group: {
+    //       _id: {
+    //         year: { $year: "$createdAt" },
+    //         month: { $month: "$createdAt" },
+    //         day: { $dayOfMonth: "$createdAt" },
+    //       },
+    //       messages: { $push: "$$ROOT" }, // Pushes the entire document into the array
+    //     },
+    //   },
+    //   { $sort: { "_id.year": -1, "_id.month": -1, "_id.day": -1 } }, // Optionally sort by date
+    // ]);
+
     res.json(messages);
   } catch (error) {
     res.status(400);
